@@ -37,7 +37,7 @@ public class UserController {
     public UserDto patchUser(@PathVariable("userId") String userIdString, @RequestBody User user) {
         log.info("Started request handling by UserController#updateUser(...)");
         User result;
-        if (userIdString == null || userIdString.equals("null")) {
+        if (userIdString.equals("null")) {
             log.info("Started creating user with email = {} and name = {}", user.getEmail(), user.getName());
             result = userService.createUser(user);
             log.info("User with id = {} created.", result.getId());
