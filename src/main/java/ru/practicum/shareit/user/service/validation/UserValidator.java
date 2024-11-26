@@ -14,30 +14,27 @@ public class UserValidator {
 
     public void validateNewUser(User user) {
         validateName(user.getName());
-        validateEmail(user.getEmail());
+        validateEmail(user.getEmail(), 0);
     }
 
-    public void validateUpdatedUserWithId(User user) {
+    public void validatePatchedUser(User user) {
         long userId = user.getId();
         validateExists(userId);
-        validateName(user.getName());
-        validateEmail(user.getEmail(), userId);
-    }
 
-    public void validateUpdatedUserWithoutId(User user) {
-        validateExists(user.getEmail());
-        validateName(user.getName());
+        String userName = user.getName();
+        if (userName != null) {
+            validateName(user.getName());
+        }
+
+        String userEmail = user.getEmail();
+        if (userEmail != null) {
+            validateEmail(userEmail, userId);
+        }
     }
 
     public void validateExists(long id) {
         throwExceptionIfTrue(userRepository.get(id) == null,
                 String.format("User with id = %d not found.", id)
-        );
-    }
-
-    public void validateExists(String email) {
-        throwExceptionIfTrue(userRepository.get(email) == null,
-                String.format("User with email = %s not found.", email)
         );
     }
 
@@ -47,44 +44,25 @@ public class UserValidator {
         );
     }
 
-    // Валидация почты нового пользователя
-    private void validateEmail(String email) {
-        //Проверка, что поле с почтой в запросе не пустое
-        boolean condition1 = !isStringEmptyInJson(email);
-
-        //Проверка, что почта соответствует шаблону
-        boolean condition2 = secondEmailCondition(email);
-
-        //Проверка, что почта не занята
-        boolean condition3 = userRepository.get(email) == null;
-
-        throwExceptionWhenEmailNotValid(condition1, condition2, condition3);
-    }
-
-    //Валидация почты существующего пользователя
+    //Валидация почты  пользователя. Если userId = 0, то считается, что проверяется почта нового пользователя,
+    // иначе - существующего
     private void validateEmail(String email, long userId) {
         //Проверка, что поле с почтой в запросе не пустое
         boolean condition1 = !isStringEmptyInJson(email);
 
         //Проверка, что почта соответствует шаблону
-        boolean condition2 = secondEmailCondition(email);
+        String emailRegExp = "[\\w\\.]+@[a-z0-9]+\\.[a-z][a-z]+";
+        boolean condition2 = email.matches(emailRegExp);
 
         //Проверка, что почта не занята
+        boolean condition3;
         User userFoundByMail = userRepository.get(email);
-        boolean condition3 = userFoundByMail == null || userFoundByMail.getId() == userId;
+        if (userId == 0) {
+            condition3 = userFoundByMail == null;
+        } else {
+            condition3 = userFoundByMail == null || userFoundByMail.getId() == userId;
+        }
 
-        throwExceptionWhenEmailNotValid(condition1, condition2, condition3);
-    }
-
-    //Проверка, что почта соответствует шаблону
-    private boolean secondEmailCondition(String email) {
-        String emailRegExp = "[\\w\\.]+@[a-z0-9]+\\.[a-z][a-z]+";
-        return email.matches(emailRegExp);
-    }
-
-    // В метод передаются результаты проверки 3 критериев допустимости email, и если хотя бы 1 проверка не прошла,
-    // то выбрасывается исключение
-    private void throwExceptionWhenEmailNotValid(boolean condition1, boolean condition2, boolean condition3) {
         String errorMessage = "";
         if (!condition1) {
             errorMessage = "Email is empty or absent.";

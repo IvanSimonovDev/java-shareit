@@ -22,16 +22,19 @@ public class UserService {
         return userRepository.get(id);
     }
 
-    public User updateUser(User user) {
-        User newVersionOfUser;
-        if (user.getId() == 0) {
-            userValidator.validateUpdatedUserWithoutId(user);
-            newVersionOfUser = user.withId(userRepository.get(user.getEmail()).getId());
-        } else {
-            userValidator.validateUpdatedUserWithId(user);
-            newVersionOfUser = user;
+    public User patchUser(User user) {
+        userValidator.validatePatchedUser(user);
+
+        long userId = user.getId();
+        User userFromStorage = userRepository.get(userId);
+        if (user.getEmail() == null) {
+            user.setEmail(userFromStorage.getEmail());
         }
-        return userRepository.update(newVersionOfUser);
+        if (user.getName() == null) {
+            user.setName(userFromStorage.getName());
+        }
+
+        return userRepository.update(user);
     }
 
     public void deleteUser(long id) {
