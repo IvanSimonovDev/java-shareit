@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.service.validation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 @Service
@@ -33,15 +33,14 @@ public class UserValidator {
     }
 
     public void validateExists(long id) {
-        throwExceptionIfTrue(userRepository.get(id) == null,
-                String.format("User with id = %d not found.", id)
-        );
+        NotFoundException exc = new NotFoundException(String.format("User with id = %d not found.", id));
+        throwExceptionIfTrue(userRepository.get(id) == null, exc);
     }
 
     private void validateName(String userName) {
-        throwExceptionIfTrue(isStringEmptyInJson(userName),
-                "Name can not be empty or contain only whitespaces."
-        );
+        RequestParamIncorrectOrAbsentException exc =
+                new RequestParamIncorrectOrAbsentException("Name can not be empty or contain only whitespaces.");
+        throwExceptionIfTrue(isStringEmptyInJson(userName), exc);
     }
 
     //Валидация почты  пользователя. Если userId = 0, то считается, что проверяется почта нового пользователя,
@@ -64,25 +63,29 @@ public class UserValidator {
         }
 
         String errorMessage = "";
+        RuntimeException exc = null;
         if (!condition1) {
             errorMessage = "Email is empty or absent.";
+            exc = new RequestParamIncorrectOrAbsentException(errorMessage);
         } else if (!condition2) {
             errorMessage = "Email doesn't match template.";
+            exc = new RequestParamIncorrectOrAbsentException(errorMessage);
         } else if (!condition3) {
             errorMessage = "Email is busy";
+            exc = new EmailBusyException(errorMessage);
         }
-        throwExceptionIfTrue(!errorMessage.isBlank(), errorMessage);
+
+        throwExceptionIfTrue(!errorMessage.isBlank(), exc);
     }
 
-    private void throwExceptionIfTrue(boolean condition, String message) {
+    public static void throwExceptionIfTrue(boolean condition, RuntimeException exc) {
         if (condition) {
-            ValidationException exc = new ValidationException(message);
-            log.warn(message, exc);
+            log.warn(exc.getMessage(), exc);
             throw exc;
         }
     }
 
-    private static boolean isStringEmptyInJson(String string) {
+    public static boolean isStringEmptyInJson(String string) {
         return string == null || string.isBlank();
     }
 

@@ -5,9 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoMapper;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -15,6 +14,7 @@ import java.util.Optional;
 @Slf4j
 public class UserController {
     private final UserService userService;
+
     @PostMapping
     public UserDto createUser(@RequestBody User user) {
         log.info("Started request handling by UserController#createUser(...)");
@@ -35,7 +35,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public UserDto patchUser(@PathVariable("userId") String userIdString, @RequestBody User user) {
-        log.info("Started request handling by UserController#updateUser(...)");
+        log.info("Started request handling by UserController#patchUser(...)");
         User result;
         if (userIdString.equals("null")) {
             log.info("Started creating user with email = {} and name = {}", user.getEmail(), user.getName());
