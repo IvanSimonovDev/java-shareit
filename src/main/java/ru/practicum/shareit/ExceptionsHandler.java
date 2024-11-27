@@ -20,7 +20,7 @@ public class ExceptionsHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public Map<String, String> RequestParamExceptionsHandler(RequestParamIncorrectOrAbsentException exc) {
+    public Map<String, String> requestParamExceptionsHandler(RequestParamIncorrectOrAbsentException exc) {
         log.warn(EXCEPTION_CAUGHT_MESSAGE, exc);
         return Map.of("error", exc.getMessage());
     }
@@ -34,14 +34,14 @@ public class ExceptionsHandler {
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler
-    public Map<String, String> AccessDeniedExceptionsHandler(AccessDeniedException exc) {
+    public Map<String, String> accessDeniedExceptionsHandler(AccessDeniedException exc) {
         log.warn(EXCEPTION_CAUGHT_MESSAGE, exc);
         return Map.of("error", exc.getMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler
-    public Map<String, String> EmailBusyExceptionsHandler(EmailBusyException exc) {
+    public Map<String, String> emailBusyExceptionsHandler(EmailBusyException exc) {
         log.warn(EXCEPTION_CAUGHT_MESSAGE, exc);
         return Map.of("error", exc.getMessage());
     }
