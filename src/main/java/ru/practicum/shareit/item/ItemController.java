@@ -53,18 +53,10 @@ public class ItemController {
     ) {
         log.info("Started request handling by ItemController#patchItem(...)");
         Item result;
-        if (itemIdString.equals("null")) {
-            log.info("Started creating item with description = {} and name = {} for user(id = {})",
-                    item.getDescription(), item.getName(), userId);
-            item.setOwnerId(userId);
-            result = itemService.createItem(item);
-            log.info("Item with id = {} created for user(id = {}).", result.getId(), item.getOwnerId());
-        } else {
-            item.setId(Long.parseLong(itemIdString));
-            log.info("Started updating item with id = {} and ownerId = {}", item.getId(), userId);
-            result = itemService.patchItem(item, userId);
-            log.info("Ended updating item with id = {} for user(id = {}) ", result.getId(), result.getOwnerId());
-        }
+        item.setId(Long.parseLong(itemIdString));
+        log.info("Started updating item with id = {} and ownerId = {}", item.getId(), userId);
+        result = itemService.patchItem(item, userId);
+        log.info("Ended updating item with id = {} for user(id = {}) ", result.getId(), result.getOwnerId());
 
         return ItemDtoMapper.transformToDto(result);
     }
