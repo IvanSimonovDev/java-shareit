@@ -52,10 +52,9 @@ public class ItemController {
                              @RequestBody Item item
     ) {
         log.info("Started request handling by ItemController#patchItem(...)");
-        Item result;
         item.setId(Long.parseLong(itemIdString));
         log.info("Started updating item with id = {} and ownerId = {}", item.getId(), userId);
-        result = itemService.patchItem(item, userId);
+        Item result = itemService.patchItem(item, userId);
         log.info("Ended updating item with id = {} for user(id = {}) ", result.getId(), result.getOwnerId());
 
         return ItemDtoMapper.transformToDto(result);
