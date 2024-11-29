@@ -36,17 +36,10 @@ public class UserController {
     @PatchMapping("/{userId}")
     public UserDto patchUser(@PathVariable("userId") String userIdString, @RequestBody User user) {
         log.info("Started request handling by UserController#patchUser(...)");
-        User result;
-        if (userIdString.equals("null")) {
-            log.info("Started creating user with email = {} and name = {}", user.getEmail(), user.getName());
-            result = userService.createUser(user);
-            log.info("User with id = {} created.", result.getId());
-        } else {
-            user.setId(Long.parseLong(userIdString));
-            log.info("Started updating user with id = {}", user.getId());
-            result = userService.patchUser(user);
-            log.info("Ended updating user with id = {}", userIdString);
-        }
+        user.setId(Long.parseLong(userIdString));
+        log.info("Started updating user with id = {}", user.getId());
+        User result = userService.patchUser(user);
+        log.info("Ended updating user with id = {}", userIdString);
 
         return UserDtoMapper.transformToDto(result);
     }
