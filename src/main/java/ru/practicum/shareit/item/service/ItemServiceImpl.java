@@ -20,7 +20,7 @@ public class ItemServiceImpl implements ItemService {
     public Item createItem(Item item) {
         log.debug("Launched ItemService#createItem(...)");
         itemValidator.validateNewItem(item);
-        Item createdItem = itemRepository.create(item);
+        Item createdItem = itemRepository.save(item);
         log.debug("Ended ItemService#createItem(...)");
         return createdItem;
     }
@@ -30,8 +30,9 @@ public class ItemServiceImpl implements ItemService {
         itemValidator.validatePatchedItem(item, userId);
 
         long itemId = item.getId();
-        Item itemFromStorage = itemRepository.get(itemId);
-        item.setOwnerId(itemFromStorage.getOwnerId());
+        Item itemFromStorage = itemRepository.findById(itemId).get();
+        item.setOwner(itemFromStorage.getOwner());
+
         if (item.getName() == null) {
             item.setName(itemFromStorage.getName());
         }
@@ -42,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
             item.setAvailable(itemFromStorage.getAvailable());
         }
 
-        Item patchedItem = itemRepository.update(item);
+        Item patchedItem = itemRepository.save(item);
         log.debug("Ended ItemService#patchItem(...)");
         return patchedItem;
     }
@@ -51,13 +52,13 @@ public class ItemServiceImpl implements ItemService {
         log.debug("Launched ItemService#getItem(...)");
         itemValidator.validateExists(id);
         log.debug("Ended ItemService#getItem(...)");
-        return itemRepository.get(id);
+        return itemRepository.findById(id).get();
     }
 
     public List<Item> getItemsOfUser(long userId) {
         log.debug("Launched ItemService#getItemsOfUser(...)");
         userValidator.validateExists(userId);
-        List<Item> itemsOfUser = itemRepository.getAll(userId);
+        List<Item> itemsOfUser = itemRepository.findByOwnerId(userId);
         log.debug("Ended ItemService#getItemOfUser(...)");
         return itemsOfUser;
     }
@@ -68,7 +69,7 @@ public class ItemServiceImpl implements ItemService {
         if (text.isEmpty()) {
             availableItems = List.of();
         } else {
-            availableItems = itemRepository.searchAvailableItems(text);
+            availableItems = itemRepository.findAvailableWhoseNameOrDescContainsText(text);
         }
         log.debug("Ended ItemService#searchAvailableItems(...)");
         return availableItems;

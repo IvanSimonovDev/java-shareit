@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -22,9 +23,9 @@ public class ItemController {
         log.info("Started request handling by ItemController#createItem(...)");
         log.info("Started creating item with description = {} and name = {} for user(id = {})",
                 item.getDescription(), item.getName(), userId);
-        item.setOwnerId(userId);
+        item.setOwner(new User(userId, null, null));
         Item createdItem = itemService.createItem(item);
-        log.info("Item with id = {} created for user(id = {}).", createdItem.getId(), createdItem.getOwnerId());
+        log.info("Item with id = {} created for user(id = {}).", createdItem.getId(), createdItem.getOwner().getId());
         return ItemDtoMapper.transformToDto(createdItem);
     }
 
@@ -55,7 +56,7 @@ public class ItemController {
         item.setId(Long.parseLong(itemIdString));
         log.info("Started updating item with id = {} and ownerId = {}", item.getId(), userId);
         Item result = itemService.patchItem(item, userId);
-        log.info("Ended updating item with id = {} for user(id = {}) ", result.getId(), result.getOwnerId());
+        log.info("Ended updating item with id = {} for user(id = {}) ", result.getId(), result.getOwner().getId());
 
         return ItemDtoMapper.transformToDto(result);
     }
