@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDtoMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -8,8 +10,12 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
+@Component
+@RequiredArgsConstructor
 public class BookingDtoMapper {
-    public static Booking transformToBooking(ToServerBookingDto dto, long userId) {
+    private final ItemDtoMapper itemDtoMapper;
+
+    public Booking transformToBooking(ToServerBookingDto dto, long userId) {
         Item bookingItem = (new Item()).withId(dto.getItemId());
         User bookingCreator = (new User()).withId(userId);
         Booking result = new Booking();
@@ -20,18 +26,18 @@ public class BookingDtoMapper {
         return result;
     }
 
-    public static FromServerBookingDto transformToFromServerDto(Booking booking) {
+    public FromServerBookingDto transformToFromServerDto(Booking booking) {
         FromServerBookingDto result = new FromServerBookingDto();
         result.setId(booking.getId());
         result.setBooker(UserDtoMapper.transformToNestedDto(booking.getCreator()));
-        result.setItem(ItemDtoMapper.transformToNestedDto(booking.getItem()));
+        result.setItem(itemDtoMapper.transformToNestedDto(booking.getItem()));
         result.setStart(booking.getStart());
         result.setEnd(booking.getEnd());
         result.setStatus(booking.getStatus());
         return result;
     }
 
-    public static List<FromServerBookingDto> transformToFromServerDto(List<Booking> bookingsList) {
-        return bookingsList.stream().map(BookingDtoMapper::transformToFromServerDto).toList();
+    public List<FromServerBookingDto> transformToFromServerDto(List<Booking> bookingsList) {
+        return bookingsList.stream().map(this::transformToFromServerDto).toList();
     }
 }
