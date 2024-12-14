@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FromServerItemDto {
+public class NoBookingsFromServerItemDto {
     private long id;
     private String name;
     private String description;

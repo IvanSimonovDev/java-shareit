@@ -19,20 +19,21 @@ import java.util.List;
 @Slf4j
 public class BookingsController {
     private final BookingService bookingService;
+    private final BookingDtoMapper bookingDtoMapper;
 
     @PostMapping
     public FromServerBookingDto createBooking(@RequestHeader("X-Sharer-User-Id") long userId,
                                               @RequestBody ToServerBookingDto toServerBookingDto) {
         log.info("Started request handling by BookingController#createBooking(...)");
         log.info("Started creating item's (id = {}) booking for user(id = {})", toServerBookingDto.getItemId(), userId);
-        Booking bookingToCreate = BookingDtoMapper.transformToBooking(toServerBookingDto, userId);
+        Booking bookingToCreate = bookingDtoMapper.transformToBooking(toServerBookingDto, userId);
         Booking createdBooking = bookingService.createBooking(bookingToCreate, userId);
         log.info("Booking with id = {} of item (id = {}) created for user(id = {}).",
                 createdBooking.getId(),
                 createdBooking.getItem().getId(),
                 createdBooking.getCreator().getId()
         );
-        return BookingDtoMapper.transformToFromServerDto(createdBooking);
+        return bookingDtoMapper.transformToFromServerDto(createdBooking);
     }
 
     @PatchMapping("/{bookingId}")
@@ -47,7 +48,7 @@ public class BookingsController {
                 approvedBooking.getStatus(),
                 userId
         );
-        return BookingDtoMapper.transformToFromServerDto(approvedBooking);
+        return bookingDtoMapper.transformToFromServerDto(approvedBooking);
     }
 
     @GetMapping("/{bookingId}")
@@ -57,7 +58,7 @@ public class BookingsController {
         log.info("Started getting  booking (id = {}) for user (id = {})", bookingId, userId);
         Booking booking = bookingService.getBooking(bookingId, userId);
         log.info("Booking with id = {} found", booking.getId());
-        return BookingDtoMapper.transformToFromServerDto(booking);
+        return bookingDtoMapper.transformToFromServerDto(booking);
     }
 
     @GetMapping
@@ -67,17 +68,17 @@ public class BookingsController {
         log.info("Started getting  bookings in state {} for user (id = {})", state, userId);
         List<Booking> bookings = bookingService.getUsersBookings(state, userId, Sort.Direction.ASC);
         log.info("Bookings in state {} for user (id = {}) found", state, userId);
-        return BookingDtoMapper.transformToFromServerDto(bookings);
+        return bookingDtoMapper.transformToFromServerDto(bookings);
     }
 
     @GetMapping("/owner")
-    public List<Booking> getBookingsOfUsersItemsInAscOrder(
+    public List<FromServerBookingDto> getBookingsOfUsersItemsInAscOrder(
             @RequestHeader("X-Sharer-User-Id") long userId,
             @RequestParam(defaultValue = "ALL") BookingsFilterValues state) {
         log.info("Started request handling by BookingController#getBookingsOfUsersItemsInAscOrder(...)");
         log.info("Started getting  bookings in state {} for user's (id = {}) items", state, userId);
-        List<Booking> result = bookingService.getBookingsOfUsersItems(state, userId, Sort.Direction.ASC);
+        List<Booking> bookings = bookingService.getBookingsOfUsersItems(state, userId, Sort.Direction.ASC);
         log.info("Bookings in state {} for user's (id = {}) items found", state, userId);
-        return result;
+        return bookingDtoMapper.transformToFromServerDto(bookings);
     }
 }

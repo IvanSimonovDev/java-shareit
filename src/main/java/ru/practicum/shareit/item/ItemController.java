@@ -3,8 +3,9 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.FromServerItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoMapper;
+import ru.practicum.shareit.item.dto.NoBookingsFromServerItemDto;
+import ru.practicum.shareit.item.dto.WithBookingsFromServerItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
@@ -17,40 +18,41 @@ import java.util.List;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
+    private final ItemDtoMapper itemDtoMapper;
 
     @PostMapping
-    public FromServerItemDto createItem(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody Item item) {
+    public NoBookingsFromServerItemDto createItem(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody Item item) {
         log.info("Started request handling by ItemController#createItem(...)");
         log.info("Started creating item with description = {} and name = {} for user(id = {})",
                 item.getDescription(), item.getName(), userId);
         item.setOwner(new User(userId, null, null));
         Item createdItem = itemService.createItem(item);
         log.info("Item with id = {} created for user(id = {}).", createdItem.getId(), createdItem.getOwner().getId());
-        return ItemDtoMapper.transformToDto(createdItem);
+        return itemDtoMapper.transformToDto(createdItem);
     }
 
     @GetMapping("/{itemId}")
-    public FromServerItemDto getItem(@PathVariable long itemId) {
+    public NoBookingsFromServerItemDto getItem(@PathVariable long itemId) {
         log.info("Started request handling by ItemController#getItem(...)");
         log.info("Started extracting item with id = {}", itemId);
         Item requestedItem = itemService.getItem(itemId);
         log.info("Item with id = {} extracted", itemId);
-        return ItemDtoMapper.transformToDto(requestedItem);
+        return itemDtoMapper.transformToDto(requestedItem);
     }
 
     @GetMapping
-    public List<FromServerItemDto> getItemsOfUser(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<WithBookingsFromServerItemDto> getItemsOfUser(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Started request handling by ItemController#getItemsOfUser(...)");
         log.info("Started extracting items for user with id = {}", userId);
         List<Item> requestedItems = itemService.getItemsOfUser(userId);
         log.info("Items for user with id = {} extracted", userId);
-        return ItemDtoMapper.transformToDto(requestedItems);
+        return itemDtoMapper.transformToWithBookingsDto(requestedItems);
     }
 
     @PatchMapping("/{itemId}")
-    public FromServerItemDto patchItem(@PathVariable("itemId") String itemIdString,
-                                       @RequestHeader("X-Sharer-User-Id") long userId,
-                                       @RequestBody Item item
+    public NoBookingsFromServerItemDto patchItem(@PathVariable("itemId") String itemIdString,
+                                                 @RequestHeader("X-Sharer-User-Id") long userId,
+                                                 @RequestBody Item item
     ) {
         log.info("Started request handling by ItemController#patchItem(...)");
         item.setId(Long.parseLong(itemIdString));
@@ -58,16 +60,16 @@ public class ItemController {
         Item result = itemService.patchItem(item, userId);
         log.info("Ended updating item with id = {} for user(id = {}) ", result.getId(), result.getOwner().getId());
 
-        return ItemDtoMapper.transformToDto(result);
+        return itemDtoMapper.transformToDto(result);
     }
 
     @GetMapping("/search")
-    public List<FromServerItemDto> searchAvailableItems(@RequestParam String text) {
+    public List<NoBookingsFromServerItemDto> searchAvailableItems(@RequestParam String text) {
         log.info("Started request handling by ItemController#searchItems(...)");
         log.info("Started searching available items with text = {} in name or description", text);
         List<Item> foundItems = itemService.searchAvailableItems(text);
         log.info("Available items with text = {} in name or description extracted", text);
-        return ItemDtoMapper.transformToDto(foundItems);
+        return itemDtoMapper.transformToNoBookingsDto(foundItems);
     }
 
 }
