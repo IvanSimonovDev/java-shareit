@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ItemDto {
+public class FromServerItemDto {
     private long id;
     private String name;
     private String description;
