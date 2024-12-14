@@ -63,8 +63,7 @@ public class ItemDtoMapper {
                 LocalDateTime.now());
         lastBookingsOfItems.forEach(setLastBooking);
 
-        Consumer<BookingShort> setNextFutureBooking = bookingShort ->
-        {
+        Consumer<BookingShort> setNextFutureBooking = bookingShort -> {
             mapWithDtos.get(bookingShort.getItemId()).setNextBooking(bookingShort);
         };
         List<BookingShort> nBookingsOfItems = bookingsRepository.nearestFutureBookingsOfItems(mapWithDtos.keySet(),
