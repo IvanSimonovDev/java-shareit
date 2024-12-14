@@ -3,13 +3,13 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDtoMapper;
-import ru.practicum.shareit.item.dto.NoBookingsFromServerItemDto;
-import ru.practicum.shareit.item.dto.WithBookingsFromServerItemDto;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -19,6 +19,7 @@ import java.util.List;
 public class ItemController {
     private final ItemService itemService;
     private final ItemDtoMapper itemDtoMapper;
+    private final CommentDtoMapper commentDtoMapper;
 
     @PostMapping
     public NoBookingsFromServerItemDto createItem(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody Item item) {
@@ -28,16 +29,16 @@ public class ItemController {
         item.setOwner(new User(userId, null, null));
         Item createdItem = itemService.createItem(item);
         log.info("Item with id = {} created for user(id = {}).", createdItem.getId(), createdItem.getOwner().getId());
-        return itemDtoMapper.transformToDto(createdItem);
+        return itemDtoMapper.transformToNoBookingsDto(createdItem);
     }
 
     @GetMapping("/{itemId}")
-    public NoBookingsFromServerItemDto getItem(@PathVariable long itemId) {
+    public WithBookingsFromServerItemDto getItem(@PathVariable long itemId) {
         log.info("Started request handling by ItemController#getItem(...)");
         log.info("Started extracting item with id = {}", itemId);
         Item requestedItem = itemService.getItem(itemId);
         log.info("Item with id = {} extracted", itemId);
-        return itemDtoMapper.transformToDto(requestedItem);
+        return itemDtoMapper.transformToWithEmptyBookingsDto(requestedItem);
     }
 
     @GetMapping
@@ -60,7 +61,7 @@ public class ItemController {
         Item result = itemService.patchItem(item, userId);
         log.info("Ended updating item with id = {} for user(id = {}) ", result.getId(), result.getOwner().getId());
 
-        return itemDtoMapper.transformToDto(result);
+        return itemDtoMapper.transformToNoBookingsDto(result);
     }
 
     @GetMapping("/search")
@@ -72,4 +73,19 @@ public class ItemController {
         return itemDtoMapper.transformToNoBookingsDto(foundItems);
     }
 
+    @PostMapping("/{itemId}/comment")
+    public FromServerCommentDto createComment(@PathVariable("itemId") long itemId,
+                                              @RequestHeader("X-Sharer-User-Id") long userId,
+                                              @RequestBody Comment comment
+    ) {
+        log.info("Started request handling by ItemController#createComment(...)");
+        comment.setCreated(LocalDateTime.now());
+        comment.setItemId(itemId);
+        comment.setAuthorId(userId);
+        log.info("Started creating comment with authorId = {} and itemId = {}", userId, itemId);
+        Comment result = itemService.createComment(comment);
+        log.info("Comment(id = {}) by user(id = {}) for item(id = {}) created", comment.getId(),
+                comment.getAuthorId(), itemId);
+        return commentDtoMapper.convertToDto(result);
+    }
 }

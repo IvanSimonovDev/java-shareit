@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingShort;
 import ru.practicum.shareit.booking.repository.BookingsRepository;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentsRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,14 +19,36 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class ItemDtoMapper {
     private final BookingsRepository bookingsRepository;
+    private final CommentsRepository commentsRepository;
+    private final CommentDtoMapper commentDtoMapper;
 
-    public NoBookingsFromServerItemDto transformToDto(Item item) {
+    public NoBookingsFromServerItemDto transformToNoBookingsDto(Item item) {
+        List<Comment> comments = commentsRepository.findByItemId(item.getId());
+        List<FromServerCommentDto> commentsDtos = commentDtoMapper.convertToDto(comments);
         return new NoBookingsFromServerItemDto(item.getId(), item.getName(), item.getDescription(),
-                item.getAvailable());
+                item.getAvailable(), commentsDtos);
     }
 
     public List<NoBookingsFromServerItemDto> transformToNoBookingsDto(List<Item> itemsList) {
-        return itemsList.stream().map(this::transformToDto).toList();
+        return itemsList.stream().map(this::transformToNoBookingsDto).toList();
+    }
+
+    public WithBookingsFromServerItemDto transformToWithBookingsDto(Item item) {
+        WithBookingsFromServerItemDto result = transformToWithEmptyBookingsDto(item);
+
+        List<BookingShort> lastBookingInList = bookingsRepository.lastBookingsOfItems(List.of(item.getId()),
+                LocalDateTime.now());
+        if (!lastBookingInList.isEmpty()) {
+            result.setLastBooking(lastBookingInList.getFirst());
+        }
+
+        List<BookingShort> nextBookingInList = bookingsRepository.nearestFutureBookingsOfItems(List.of(item.getId()),
+                LocalDateTime.now());
+        if (!nextBookingInList.isEmpty()) {
+            result.setNextBooking(nextBookingInList.getFirst());
+        }
+
+        return result;
     }
 
     public List<WithBookingsFromServerItemDto> transformToWithBookingsDto(List<Item> itemsList) {
@@ -54,13 +78,16 @@ public class ItemDtoMapper {
         return new ItemDtoInFromServerBookingDto(item.getId(), item.getName());
     }
 
-    private WithBookingsFromServerItemDto transformToWithEmptyBookingsDto(Item item) {
+    public WithBookingsFromServerItemDto transformToWithEmptyBookingsDto(Item item) {
+        List<Comment> comments = commentsRepository.findByItemId(item.getId());
+        List<FromServerCommentDto> commentsDtos = commentDtoMapper.convertToDto(comments);
         return new WithBookingsFromServerItemDto(item.getId(),
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
                 null,
-                null
+                null,
+                commentsDtos
         );
     }
 }

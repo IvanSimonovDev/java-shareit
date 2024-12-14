@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingsRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.item.service.ItemValidator;
+import ru.practicum.shareit.item.service.validators.ItemValidator;
 import ru.practicum.shareit.user.service.validation.AccessDeniedException;
 import ru.practicum.shareit.user.service.validation.NotFoundException;
 import ru.practicum.shareit.user.service.validation.RequestParamIncorrectOrAbsentException;

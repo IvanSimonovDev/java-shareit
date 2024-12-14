@@ -4,16 +4,16 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.QBooking;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.model.QBooking;
 import ru.practicum.shareit.booking.repository.BookingsRepository;
 import ru.practicum.shareit.booking.service.validation.BookingsValidator;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.validation.UserValidator;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,16 +86,16 @@ public class BookingServiceImpl implements BookingService {
 
     private BooleanExpression byValue(BookingsFilterValues bookingFilterValue) {
         BooleanExpression byValue = null;
-        LocalDate now = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
         switch (bookingFilterValue) {
             case PAST:
-                byValue = QBooking.booking.endDate.lt(now);
+                byValue = QBooking.booking.end.lt(now);
                 break;
             case CURRENT:
-                byValue = QBooking.booking.startDate.loe(now).and(QBooking.booking.endDate.goe(now));
+                byValue = QBooking.booking.start.loe(now).and(QBooking.booking.end.goe(now));
                 break;
             case FUTURE:
-                byValue = QBooking.booking.startDate.lt(now);
+                byValue = QBooking.booking.start.lt(now);
                 break;
             case WAITING:
                 byValue = QBooking.booking.status.eq(BookingStatus.WAITING);

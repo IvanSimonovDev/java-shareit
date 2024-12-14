@@ -3,8 +3,12 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentsRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.item.service.validators.CommentsValidator;
+import ru.practicum.shareit.item.service.validators.ItemValidator;
 import ru.practicum.shareit.user.service.validation.UserValidator;
 
 import java.util.List;
@@ -16,6 +20,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemValidator itemValidator;
     private final UserValidator userValidator;
     private final ItemRepository itemRepository;
+    private final CommentsRepository commentsRepository;
+    private final CommentsValidator commentsValidator;
 
     public Item createItem(Item item) {
         log.debug("Launched ItemService#createItem(...)");
@@ -73,5 +79,21 @@ public class ItemServiceImpl implements ItemService {
         }
         log.debug("Ended ItemService#searchAvailableItems(...)");
         return availableItems;
+    }
+
+    public Comment createComment(Comment comment) {
+        log.debug("Launched ItemService#createComment(...)");
+        commentsValidator.validateNewComment(comment);
+        Comment result = commentsRepository.save(comment);
+        log.debug("Ended ItemService#createComment(...)");
+        return result;
+    }
+
+    public Comment getCommentsOnItem(long itemId) {
+        return null;
+    }
+
+    public List<Comment> getCommentsOnAllItemsOfUser(long userId) {
+        return null;
     }
 }
