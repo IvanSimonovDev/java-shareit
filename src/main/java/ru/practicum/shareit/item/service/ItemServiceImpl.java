@@ -88,12 +88,4 @@ public class ItemServiceImpl implements ItemService {
         log.debug("Ended ItemService#createComment(...)");
         return result;
     }
-
-    public Comment getCommentsOnItem(long itemId) {
-        return null;
-    }
-
-    public List<Comment> getCommentsOnAllItemsOfUser(long userId) {
-        return null;
-    }
 }

@@ -15,19 +15,20 @@ public interface BookingsRepository extends JpaRepository<Booking, Long>, Queryd
     @Query(value = """
             SELECT EXISTS (SELECT 1
                            FROM bookings
-                           WHERE bookings.start_timestamp >= ?1 AND
-                           bookings.end_timestamp <= ?1);
+                           WHERE item_id = :itemId AND
+                           bookings.start_timestamp >= :startDate AND
+                           bookings.end_timestamp <= :endDate);
             """,
             nativeQuery = true)
-    Boolean bookingExists(LocalDateTime startDate, LocalDateTime endDate);
+    Boolean bookingExists(LocalDateTime startDate, LocalDateTime endDate, long itemId);
 
     @Query(value = """
             SELECT MAX(start_timestamp) AS start,
                    MAX(end_timestamp) AS end,
                    item_id
             FROM bookings
-            WHERE (item_id IN ?1)
-            AND (NOT start_timestamp > ?2)
+            WHERE item_id IN :itemIds
+            AND NOT start_timestamp > :now
             GROUP BY item_id;
             """,
             nativeQuery = true)
@@ -38,8 +39,8 @@ public interface BookingsRepository extends JpaRepository<Booking, Long>, Queryd
                    MIN(end_timestamp) AS end,
                    item_id
             FROM bookings
-            WHERE (item_id IN ?1)
-            AND (start_timestamp > ?2)
+            WHERE item_id IN :itemIds
+            AND start_timestamp > :now
             GROUP BY item_id;
             """,
             nativeQuery = true)

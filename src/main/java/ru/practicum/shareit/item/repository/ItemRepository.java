@@ -12,7 +12,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("""
             SELECT it
             FROM Item as it
-            WHERE (it.name ILIKE ?1 OR it.description ILIKE ?1)
+            WHERE (it.name ILIKE :searchText OR it.description ILIKE :searchText)
             AND it.available = TRUE
             """)
     List<Item> findAvailableWhoseNameOrDescContainsText(String searchText);

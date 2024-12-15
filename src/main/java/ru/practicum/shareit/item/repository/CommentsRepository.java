@@ -17,7 +17,7 @@ public interface CommentsRepository extends JpaRepository<Comment, Long> {
                    c.created
             FROM comments AS c
             JOIN items ON c.item_id = items.id
-            WHERE items.owner_id = ?1;
+            WHERE items.owner_id = :userId;
             """, nativeQuery = true)
     List<Comment> findByItemsOwnerId(long userId);
 }

@@ -18,9 +18,9 @@ public class ItemValidator {
     private final UserValidator userValidator;
 
     public void validateNewItem(Item item) {
-        userValidator.validateExists(item.getOwner().getId());
         validateNameOrDescription(item.getName());
         validateNameOrDescription(item.getDescription());
+        userValidator.validateExists(item.getOwner().getId());
         validateAvailable(item.getAvailable());
     }
 

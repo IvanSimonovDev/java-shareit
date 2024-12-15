@@ -17,8 +17,4 @@ public interface ItemService {
     List<Item> searchAvailableItems(String text);
 
     Comment createComment(Comment comment);
-
-    Comment getCommentsOnItem(long itemId);
-
-    List<Comment> getCommentsOnAllItemsOfUser(long userId);
 }

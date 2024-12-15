@@ -26,7 +26,7 @@ public class BookingsValidator {
         itemValidator.validateExists(itemId);
         userValidator.validateExists(userId);
         validateItemAvailable(itemId);
-        validateStartAndEnd(booking.getStart(), booking.getEnd());
+        validateStartAndEnd(booking.getStart(), booking.getEnd(), itemId);
     }
 
     public void validateBookingToPermitOrReject(long bookingId, long userId) {
@@ -53,11 +53,11 @@ public class BookingsValidator {
         UserValidator.throwExceptionIfTrue(condition, exc);
     }
 
-    private void validateStartAndEnd(LocalDateTime start, LocalDateTime end) {
+    private void validateStartAndEnd(LocalDateTime start, LocalDateTime end, long itemId) {
         LocalDateTime now = LocalDateTime.now();
         boolean condition = start.isAfter(end) ||
                 start.isBefore(now) ||
-                bookingsRepository.bookingExists(start, end);
+                bookingsRepository.bookingExists(start, end, itemId);
         String excMessage =
                 String.format("Start date (%s) and/or end date (%s) incorrect or booking on these dates exists",
                         start, end);
