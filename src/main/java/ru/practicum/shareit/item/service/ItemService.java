@@ -6,7 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemService {
-    Item createItem(Item item);
+    Item createItem(Item item, Long requestId);
 
     Item patchItem(Item item, long userId);
 

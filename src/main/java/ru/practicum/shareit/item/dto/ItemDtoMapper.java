@@ -89,4 +89,14 @@ public class ItemDtoMapper {
                 commentsDtos
         );
     }
+
+    public Item transformFromToServerItemDto(ToServerItemDto dto) {
+        Item result = new Item();
+        result.setId(dto.getId());
+        result.setOwner(dto.getOwner());
+        result.setName(dto.getName());
+        result.setDescription(dto.getDescription());
+        result.setAvailable(dto.getAvailable());
+        return result;
+    }
 }

@@ -18,13 +18,13 @@ public class Item {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
-    private User owner;
+    private @With User owner;
 
     @Column(name = "name")
-    private String name;
+    private @With String name;
 
     @Column(name = "description")
-    private String description;
+    private @With String description;
 
     @Column(name = "available")
     private Boolean available;

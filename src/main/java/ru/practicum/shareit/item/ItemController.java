@@ -22,12 +22,14 @@ public class ItemController {
     private final CommentDtoMapper commentDtoMapper;
 
     @PostMapping
-    public NoBookingsFromServerItemDto createItem(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody Item item) {
+    public NoBookingsFromServerItemDto createItem(@RequestHeader("X-Sharer-User-Id") long userId,
+                                                  @RequestBody ToServerItemDto itemDto) {
         log.info("Started request handling by ItemController#createItem(...)");
         log.info("Started creating item with description = {} and name = {} for user(id = {})",
-                item.getDescription(), item.getName(), userId);
+                itemDto.getDescription(), itemDto.getName(), userId);
+        Item item = itemDtoMapper.transformFromToServerItemDto(itemDto);
         item.setOwner(new User(userId, null, null));
-        Item createdItem = itemService.createItem(item);
+        Item createdItem = itemService.createItem(item, itemDto.getRequestId());
         log.info("Item with id = {} created for user(id = {}).", createdItem.getId(), createdItem.getOwner().getId());
         return itemDtoMapper.transformToNoBookingsDto(createdItem);
     }

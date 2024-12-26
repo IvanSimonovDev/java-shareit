@@ -9,6 +9,8 @@ import ru.practicum.shareit.item.repository.CommentsRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.validators.CommentsValidator;
 import ru.practicum.shareit.item.service.validators.ItemValidator;
+import ru.practicum.shareit.request.service.RequestsService;
+import ru.practicum.shareit.request.service.RequestsValidator;
 import ru.practicum.shareit.user.service.validation.UserValidator;
 
 import java.util.List;
@@ -22,11 +24,16 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final CommentsRepository commentsRepository;
     private final CommentsValidator commentsValidator;
+    private final RequestsValidator requestsValidator;
+    private final RequestsService requestsService;
 
-    public Item createItem(Item item) {
+    public Item createItem(Item item, Long requestId) {
         log.debug("Launched ItemService#createItem(...)");
         itemValidator.validateNewItem(item);
         Item createdItem = itemRepository.save(item);
+        if (requestId != null && requestId != 0L) {
+            requestsService.addResponseOnRequest(requestId, createdItem.getId());
+        }
         log.debug("Ended ItemService#createItem(...)");
         return createdItem;
     }
