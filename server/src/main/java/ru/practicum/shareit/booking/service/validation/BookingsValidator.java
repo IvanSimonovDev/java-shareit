@@ -56,7 +56,6 @@ public class BookingsValidator {
     private void validateStartAndEnd(LocalDateTime start, LocalDateTime end, long itemId) {
         LocalDateTime now = LocalDateTime.now();
         boolean condition = start.isAfter(end) ||
-                start.isBefore(now) ||
                 bookingsRepository.bookingExists(start, end, itemId);
         String excMessage =
                 String.format("Start date (%s) and/or end date (%s) incorrect or booking on these dates exists",

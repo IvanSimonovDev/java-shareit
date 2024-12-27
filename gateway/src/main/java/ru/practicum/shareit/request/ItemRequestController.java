@@ -1,15 +1,12 @@
 package ru.practicum.shareit.request;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.BookingClient;
-import ru.practicum.shareit.booking.ToServerBookingDto;
-
-import java.util.List;
 
 @Controller
 @RequestMapping(path = "/requests")
@@ -21,7 +18,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ResponseEntity<Object> createRequest(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                  @RequestBody ItemRequest request) {
+                                                @RequestBody @Valid ItemRequest request) {
         log.info("Started request handling by ItemRequestController#createRequest(...)");
         return itemRequestClient.createRequest(userId, request);
     }
@@ -40,7 +37,7 @@ public class ItemRequestController {
 
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getItemRequest(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                   @PathVariable long requestId) {
+                                                 @PathVariable long requestId) {
         log.info("Started request handling by ItemRequestController#getItemRequest(...)");
         return itemRequestClient.getItemRequest(userId, requestId);
     }

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import ru.practicum.shareit.item.Item;
 
@@ -17,6 +18,7 @@ public class ItemRequest {
 
     private long creatorId;
 
+    @NotBlank
     private String description;
 
     private @With LocalDateTime created;

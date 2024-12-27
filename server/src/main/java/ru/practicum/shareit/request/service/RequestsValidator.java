@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.service.validation.NotFoundException;
-import ru.practicum.shareit.user.service.validation.RequestParamIncorrectOrAbsentException;
 import ru.practicum.shareit.user.service.validation.UserValidator;
 
 @RequiredArgsConstructor
@@ -16,7 +15,6 @@ public class RequestsValidator {
 
     public void validateNew(ItemRequest request) {
         validateCreator(request.getCreatorId());
-        validateDescription(request.getDescription());
     }
 
     public void validateExists(long requestId) {
@@ -27,11 +25,4 @@ public class RequestsValidator {
     private void validateCreator(long creatorId) {
         userValidator.validateExists(creatorId);
     }
-
-    private void validateDescription(String description) {
-        String errorMsg = "Description can not be empty or contain only whitespaces.";
-        RequestParamIncorrectOrAbsentException exc = new RequestParamIncorrectOrAbsentException(errorMsg);
-        UserValidator.throwExceptionIfTrue(UserValidator.isStringEmptyInJson(description), exc);
-    }
-
 }
