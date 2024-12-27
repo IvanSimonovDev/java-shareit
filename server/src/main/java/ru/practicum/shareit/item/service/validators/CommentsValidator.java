@@ -20,15 +20,7 @@ public class CommentsValidator {
     private final BookingService bookingService;
 
     public void validateNewComment(Comment comment) {
-        validateText(comment.getText());
         validateWasBooking(comment.getAuthorId(), comment.getItemId());
-    }
-
-    private void validateText(String content) {
-        boolean condition = UserValidator.isStringEmptyInJson(content);
-        RequestParamIncorrectOrAbsentException exc =
-                new RequestParamIncorrectOrAbsentException("Content can not be empty or contain only whitespaces.");
-        UserValidator.throwExceptionIfTrue(condition, exc);
     }
 
     private void validateWasBooking(long userId, long itemId) {

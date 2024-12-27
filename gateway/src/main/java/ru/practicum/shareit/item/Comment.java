@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,6 +18,7 @@ public class Comment {
 
     private long itemId;
 
+    @NotBlank
     private String text;
 
     private LocalDateTime created;
