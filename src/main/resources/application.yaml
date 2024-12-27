@@ -4,6 +4,8 @@ logging.level.org.springframework:
   transaction: INFO
   transaction.interceptor: TRACE
 
+server.port: 9090
+
 spring:
   application.name: ShareIt
   main.banner-mode: OFF
