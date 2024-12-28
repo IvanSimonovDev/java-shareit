@@ -7,7 +7,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
-import ru.practicum.shareit.user.User;
 
 import java.util.Map;
 
@@ -45,7 +44,7 @@ public class ItemsClient extends BaseClient {
         return get("/search", 0L, parameters);
     }
 
-    public ResponseEntity<Object> createComment (long itemId, long userId, Comment comment) {
+    public ResponseEntity<Object> createComment(long itemId, long userId, Comment comment) {
         String url = String.format("/%d/comment", itemId);
         return post(url, userId, comment);
     }
