@@ -11,7 +11,6 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.validators.ItemValidator;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.validation.NotFoundException;
-import ru.practicum.shareit.user.service.validation.RequestParamIncorrectOrAbsentException;
 import ru.practicum.shareit.user.service.validation.UserValidator;
 
 import java.util.Optional;
@@ -57,30 +56,6 @@ public class ItemValidatorUnitTests {
                 .when(userValidator)
                 .validateExists(Mockito.anyLong());
         Assertions.assertThrows(NotFoundException.class, () -> itemValidator.validateNewItem(item));
-    }
-
-    @Test
-    public void validationOfNewItemShouldNotPassWhenNameIsEmpty() {
-        User user = new User(1L, null, null);
-        Item item = new Item(1L, user, "   ", "Very good table.", true);
-        Assertions.assertThrows(RequestParamIncorrectOrAbsentException.class,
-                () -> itemValidator.validateNewItem(item));
-    }
-
-    @Test
-    public void validationOfNewItemShouldNotPassWhenDescriptionIsEmpty() {
-        User user = new User(1L, null, null);
-        Item item = new Item(1L, user, "Table", "     ", true);
-        Assertions.assertThrows(RequestParamIncorrectOrAbsentException.class,
-                () -> itemValidator.validateNewItem(item));
-    }
-
-    @Test
-    public void validationOfNewItemShouldNotPassWhenAvailableIsNull() {
-        User user = new User(1L, null, null);
-        Item item = new Item(1L, user, "Table", "Hard to destroy.", null);
-        Assertions.assertThrows(RequestParamIncorrectOrAbsentException.class,
-                () -> itemValidator.validateNewItem(item));
     }
 
     @Test

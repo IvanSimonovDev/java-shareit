@@ -6,7 +6,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDtoMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserDtoMapper;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -15,12 +14,10 @@ import java.util.List;
 public class BookingDtoMapper {
     private final ItemDtoMapper itemDtoMapper;
 
-    public Booking transformToBooking(ToServerBookingDto dto, long userId) {
+    public Booking transformToBooking(ToServerBookingDto dto) {
         Item bookingItem = (new Item()).withId(dto.getItemId());
-        User bookingCreator = (new User()).withId(userId);
         Booking result = new Booking();
         result.setItem(bookingItem);
-        result.setCreator(bookingCreator);
         result.setStart(dto.getStart());
         result.setEnd(dto.getEnd());
         return result;

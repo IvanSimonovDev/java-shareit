@@ -26,7 +26,7 @@ public class BookingsController {
                                               @RequestBody ToServerBookingDto toServerBookingDto) {
         log.info("Started request handling by BookingController#createBooking(...)");
         log.info("Started creating item's (id = {}) booking for user(id = {})", toServerBookingDto.getItemId(), userId);
-        Booking bookingToCreate = bookingDtoMapper.transformToBooking(toServerBookingDto, userId);
+        Booking bookingToCreate = bookingDtoMapper.transformToBooking(toServerBookingDto);
         Booking createdBooking = bookingService.createBooking(bookingToCreate, userId);
         log.info("Booking with id = {} of item (id = {}) created for user(id = {}).",
                 createdBooking.getId(),

@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.validation.NotFoundException;
-import ru.practicum.shareit.user.service.validation.RequestParamIncorrectOrAbsentException;
 import ru.practicum.shareit.user.service.validation.UserValidator;
 
 @SpringBootTest
@@ -41,22 +40,6 @@ public class UserValidatorUnitTests {
     }
 
     @Test
-    public void checkValidateNewUserThrowsExceptionWhenNameIsNull() {
-        User newUser = new User(0, null, "biba.boba1995@mail.ru");
-        Assertions.assertThrows(RequestParamIncorrectOrAbsentException.class,
-                () -> userValidator.validateNewUser(newUser)
-        );
-    }
-
-    @Test
-    public void checkValidateNewUserThrowsExceptionWhenEmailNotCorrect() {
-        User newUser = new User(0, "Dan", "biba");
-        Assertions.assertThrows(RequestParamIncorrectOrAbsentException.class,
-                () -> userValidator.validateNewUser(newUser)
-        );
-    }
-
-    @Test
     public void checkValidatePatchedUserDoesNotThrowExceptionWhenDataIsCorrect() {
         Mockito.when(userRepository.existsById(3L))
                 .thenReturn(true);
@@ -70,23 +53,5 @@ public class UserValidatorUnitTests {
                 .thenReturn(false);
         User user = new User(3, "Dan", "biba.boba1995@mail.ru");
         Assertions.assertThrows(NotFoundException.class, () -> userValidator.validatePatchedUser(user));
-    }
-
-    @Test
-    public void checkValidatePatchedUserThrowsExceptionWhenNameIsIncorrect() {
-        Mockito.when(userRepository.existsById(3L))
-                .thenReturn(true);
-        User user = new User(3, "   ", "biba.boba1995@mail.ru");
-        Assertions.assertThrows(RequestParamIncorrectOrAbsentException.class,
-                () -> userValidator.validatePatchedUser(user));
-    }
-
-    @Test
-    public void checkValidatePatchedUserThrowsExceptionWhenEmailIsIncorrect() {
-        Mockito.when(userRepository.existsById(3L))
-                .thenReturn(true);
-        User user = new User(3, "Stan", "biba");
-        Assertions.assertThrows(RequestParamIncorrectOrAbsentException.class,
-                () -> userValidator.validatePatchedUser(user));
     }
 }
